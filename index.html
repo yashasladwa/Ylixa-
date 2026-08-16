@@ -110,7 +110,7 @@
 </div>
 
 <script>
-function sendMessage() {
+async function sendMessage() {
   const input = document.getElementById("message");
   const chat = document.getElementById("chat");
 
@@ -125,16 +125,37 @@ function sendMessage() {
   `;
 
   input.value = "";
+  chat.scrollTop = chat.scrollHeight;
 
-  setTimeout(() => {
-    chat.innerHTML += `
-      <div class="message ylixa">
-        I'm still being built! 🧠
-      </div>
-    `;
+  const loading = document.createElement("div");
+  loading.className = "message ylixa";
+  loading.textContent = "Thinking... 🧠";
+  chat.appendChild(loading);
 
-    chat.scrollTop = chat.scrollHeight;
-  }, 500);
+  try {
+    const response = await fetch(
+      "https://ylixa.ylixa.workers.dev",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: text
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    loading.textContent =
+      data.reply || data.error || "I couldn't get a response.";
+
+  } catch (error) {
+    loading.textContent =
+      "I could not connect to YLIXA.";
+    console.error(error);
+  }
 
   chat.scrollTop = chat.scrollHeight;
 }
