@@ -1,3 +1,4 @@
+
 export default {
   async fetch(request) {
     const corsHeaders = {
@@ -6,7 +7,6 @@ export default {
       "Access-Control-Allow-Headers": "Content-Type"
     };
 
-    // Handle browser CORS check
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -14,7 +14,6 @@ export default {
       });
     }
 
-    // Test GET request
     if (request.method === "GET") {
       return new Response(
         JSON.stringify({
@@ -23,7 +22,6 @@ export default {
           message: "YLIXA backend is working!"
         }),
         {
-          status: 200,
           headers: {
             "Content-Type": "application/json",
             ...corsHeaders
@@ -32,13 +30,11 @@ export default {
       );
     }
 
-    // Handle chat messages
     if (request.method === "POST") {
       try {
         const data = await request.json();
-        const message = data.message;
 
-        if (!message) {
+        if (!data.message) {
           return new Response(
             JSON.stringify({ error: "Message is missing" }),
             {
@@ -53,7 +49,7 @@ export default {
 
         return new Response(
           JSON.stringify({
-            reply: `YLIXA received: ${message}`
+            reply: "YLIXA received: " + data.message
           }),
           {
             status: 200,
@@ -63,12 +59,9 @@ export default {
             }
           }
         );
-
       } catch (error) {
         return new Response(
-          JSON.stringify({
-            error: "Invalid request"
-          }),
+          JSON.stringify({ error: "Invalid request" }),
           {
             status: 400,
             headers: {
